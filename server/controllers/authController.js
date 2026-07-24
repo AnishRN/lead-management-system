@@ -1,14 +1,16 @@
 const User = require("../models/User");
+const generateToken = require("../utils/generateToken");
 
-// @desc    Register a new user
+// =====================================================
+// @desc    Register User
 // @route   POST /api/auth/register
-// @access  Public (for now)
+// @access  Public
+// =====================================================
 const registerUser = async (req, res) => {
     try {
 
         const { name, email, password, role } = req.body;
 
-        // Check required fields
         if (!name || !email || !password) {
             return res.status(400).json({
                 success: false,
@@ -41,7 +43,8 @@ const registerUser = async (req, res) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                createdAt: user.createdAt
             }
         });
 
@@ -51,12 +54,138 @@ const registerUser = async (req, res) => {
 
         res.status(500).json({
             success: false,
-            message: "Server Error"
+            message: "Internal Server Error"
         });
 
     }
 };
 
+// =====================================================
+// @desc    Login User
+// @route   POST /api/auth/login
+// @access  Public
+// =====================================================
+const loginUser = async (req, res) => {
+
+    try {
+
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Email and password are required"
+            });
+
+        }
+
+        // Find User
+        const user = await User.findOne({ email });
+
+        if (!user) {
+
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+
+        }
+
+        // Compare Password
+        const isMatch = await user.comparePassword(password);
+
+        if (!isMatch) {
+
+            return res.status(401).json({
+                success: false,
+                message: "Invalid email or password"
+            });
+
+        }
+
+        // Generate Token
+        const token = generateToken(user._id);
+
+        res.status(200).json({
+
+            success: true,
+
+            message: "Login successful",
+
+            token,
+
+            user: {
+
+                id: user._id,
+
+                name: user.name,
+
+                email: user.email,
+
+                role: user.role
+
+            }
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+
+    }
+
+};
+
+// =====================================================
+// @desc    Get Logged-in User
+// @route   GET /api/auth/me
+// @access  Private
+// =====================================================
+const getMe = async (req, res) => {
+
+    res.status(200).json({
+
+        success: true,
+
+        user: req.user
+
+    });
+
+};
+
+// =====================================================
+// @desc    Admin Only Route
+// @route   GET /api/auth/admin
+// @access  Private (Admin)
+// =====================================================
+const adminOnly = async (req, res) => {
+
+    res.status(200).json({
+
+        success: true,
+
+        message: "Welcome Admin",
+
+        user: req.user
+
+    });
+
+};
+
 module.exports = {
-    registerUser
+
+    registerUser,
+
+    loginUser,
+
+    getMe,
+
+    adminOnly
+
 };
