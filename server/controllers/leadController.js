@@ -1,6 +1,7 @@
 const Lead = require("../models/Lead");
 const Activity = require("../models/Activity");
 const User = require("../models/User");
+const Note = require("../models/Note");
 
 const LEAD_STATUS = require("../constants/leadStatus");
 const validateObjectId = require("../utils/validateObjectId");
@@ -437,14 +438,125 @@ const updateLeadStatus = async (req, res) => {
 
 };
 
+// ======================================================
+// Get Lead Timeline
+// GET /api/leads/:id/timeline
+// ======================================================
+
+const getLeadTimeline = async (req, res) => {
+
+    try {
+
+        const leadId = req.params.id;
+
+        if (!validateObjectId(leadId)) {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Lead ID"
+            });
+
+        }
+
+        const lead = await Lead.findById(leadId);
+
+        if (!lead) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Lead not found"
+            });
+
+        }
+
+        // Fetch activities
+        const activities = await Activity.find({ lead: leadId })
+            .populate("user", "name email role")
+            .sort({ createdAt: -1 });
+
+        // Fetch notes
+        const notes = await Note.find({ lead: leadId })
+            .populate("user", "name email role")
+            .sort({ createdAt: -1 });
+
+        // Convert to common format
+        const activityTimeline = activities.map(activity => ({
+
+            type: "activity",
+
+            action: activity.action,
+
+            oldValue: activity.oldValue,
+
+            newValue: activity.newValue,
+
+            user: activity.user,
+
+            createdAt: activity.createdAt
+
+        }));
+
+        const noteTimeline = notes.map(note => ({
+
+            type: "note",
+
+            text: note.text,
+
+            user: note.user,
+
+            createdAt: note.createdAt
+
+        }));
+
+        // Merge & Sort
+        const timeline = [...activityTimeline, ...noteTimeline].sort(
+
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+
+        );
+
+        res.status(200).json({
+
+            success: true,
+
+            count: timeline.length,
+
+            timeline
+
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+
+            message: "Internal Server Error"
+
+        });
+
+    }
+
+};
+
 module.exports = {
 
     createLead,
+
     getAllLeads,
+
     getLeadById,
+
     updateLead,
+
     deleteLead,
+
     assignLead,
+
     updateLeadStatus,
+
+    getLeadTimeline
 
 };

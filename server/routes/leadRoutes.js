@@ -10,6 +10,7 @@ const {
     deleteLead,
     assignLead,
     updateLeadStatus,
+    getLeadTimeline
 } = require("../controllers/leadController");
 
 const protect = require("../middleware/authMiddleware");
@@ -32,13 +33,24 @@ router.post(
 // ======================================================
 // Get All Leads
 // GET /api/leads
-// Admin & Member
 // ======================================================
 
 router.get(
     "/",
     protect,
     getAllLeads
+);
+
+// ======================================================
+// Get Lead Timeline
+// GET /api/leads/:id/timeline
+// ======================================================
+
+router.get(
+    "/:id/timeline",
+    protect,
+    leadAccess,
+    getLeadTimeline
 );
 
 // ======================================================
@@ -68,6 +80,7 @@ router.put(
 // ======================================================
 // Delete Lead
 // DELETE /api/leads/:id
+// Admin Only
 // ======================================================
 
 router.delete(
@@ -80,6 +93,7 @@ router.delete(
 // ======================================================
 // Assign Lead
 // PATCH /api/leads/:id/assign
+// Admin Only
 // ======================================================
 
 router.patch(
@@ -90,7 +104,7 @@ router.patch(
 );
 
 // ======================================================
-// Update Lead Status
+// Update Status
 // PATCH /api/leads/:id/status
 // ======================================================
 
