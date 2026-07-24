@@ -4,7 +4,7 @@ const LEAD_STATUS = [
     "Qualified",
     "Proposal Sent",
     "Won",
-    "Lost",
+    "Lost"
 ];
 
 module.exports = LEAD_STATUS;

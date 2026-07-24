@@ -16,48 +16,72 @@ const protect = async (req, res, next) => {
 
         }
 
+
         if (!token) {
+
             return res.status(401).json({
+
                 success: false,
+
                 message: "Access denied. No token provided."
+
             });
+
         }
 
-        console.log("==========================");
-        console.log("Authorization Header:", req.headers.authorization);
-        console.log("Extracted Token:", token);
-        console.log("JWT Secret:", process.env.JWT_SECRET);
-        console.log("==========================");
 
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET
         );
 
-        const user = await User.findById(decoded.id).select("-password");
+
+        const user = await User.findById(decoded.id)
+            .select("-password");
+
 
         if (!user) {
+
             return res.status(401).json({
-                success: false,
-                message: "User associated with this token no longer exists."
+
+                success:false,
+
+                message:"User no longer exists."
+
             });
+
         }
+
 
         req.user = user;
 
+
         next();
 
-    } catch (error) {
 
-        console.error("Authentication Error:", error.message);
+    } catch(error) {
+
+
+        console.error(
+            "Authentication Error:",
+            error.message
+        );
+
 
         return res.status(401).json({
-            success: false,
-            message: "Invalid or expired token."
+
+            success:false,
+
+            message:"Invalid or expired token."
+
         });
+
 
     }
 
 };
 
-module.exports = protect;
+
+module.exports = {
+    protect
+};

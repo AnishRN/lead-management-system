@@ -1,5 +1,4 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
@@ -13,16 +12,20 @@ const {
     getLeadTimeline
 } = require("../controllers/leadController");
 
-const protect = require("../middleware/authMiddleware");
-const authorizeRoles = require("../middleware/roleMiddleware");
-const leadAccess = require("../middleware/leadAccessMiddleware");
+// Middleware
+const { protect } = require("../middleware/authMiddleware");
+const { authorizeRoles } = require("../middleware/roleMiddleware");
+const leadAccess = require("../middleware/leadAccessMiddleware"); // ✅ FIXED
+const queryMiddleware = require("../middleware/queryMiddleware");
+
 
 // ======================================================
-// Create Lead
-// POST /api/leads
-// Admin Only
+// Routes
+// Base: /api/leads
 // ======================================================
 
+
+// ✅ Create Lead (Admin only)
 router.post(
     "/",
     protect,
@@ -30,89 +33,76 @@ router.post(
     createLead
 );
 
-// ======================================================
-// Get All Leads
-// GET /api/leads
-// ======================================================
 
+// ✅ Get All Leads (Admin + Member)
 router.get(
     "/",
     protect,
+    queryMiddleware,
     getAllLeads
 );
 
-// ======================================================
-// Get Lead Timeline
-// GET /api/leads/:id/timeline
-// ======================================================
 
-router.get(
-    "/:id/timeline",
-    protect,
-    leadAccess,
-    getLeadTimeline
-);
-
-// ======================================================
-// Get Lead By ID
-// GET /api/leads/:id
-// ======================================================
-
+// ✅ Get Single Lead
 router.get(
     "/:id",
     protect,
-    leadAccess,
+    leadAccess, // ✅ FIXED
     getLeadById
 );
 
-// ======================================================
-// Update Lead
-// PUT /api/leads/:id
-// ======================================================
 
+// ✅ Update Lead (Admin only)
 router.put(
     "/:id",
     protect,
-    leadAccess,
+    authorizeRoles("admin"),
+    leadAccess, // ✅ FIXED
     updateLead
 );
 
-// ======================================================
-// Delete Lead
-// DELETE /api/leads/:id
-// Admin Only
-// ======================================================
 
+// ✅ Delete Lead (Admin only)
 router.delete(
     "/:id",
     protect,
     authorizeRoles("admin"),
+    leadAccess, // ✅ FIXED
     deleteLead
 );
 
+
 // ======================================================
-// Assign Lead
-// PATCH /api/leads/:id/assign
-// Admin Only
+// Special Actions
 // ======================================================
 
+
+// ✅ Assign Lead (Admin only)
 router.patch(
     "/:id/assign",
     protect,
     authorizeRoles("admin"),
+    leadAccess, // ✅ FIXED
     assignLead
 );
 
-// ======================================================
-// Update Status
-// PATCH /api/leads/:id/status
-// ======================================================
 
+// ✅ Update Status (Admin + Member)
 router.patch(
     "/:id/status",
     protect,
-    leadAccess,
+    leadAccess, // ✅ FIXED
     updateLeadStatus
 );
+
+
+// ✅ Lead Timeline (Admin + Member)
+router.get(
+    "/:id/timeline",
+    protect,
+    leadAccess, // ✅ FIXED
+    getLeadTimeline
+);
+
 
 module.exports = router;

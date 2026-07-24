@@ -38,10 +38,10 @@ app.use("/api/auth", authRoutes);
 
 app.use("/api/leads", leadRoutes);
 
-// Nested Note Routes
+// ✅ Nested Note Routes (Lead-specific)
 app.use("/api/leads/:id/notes", noteRoutes);
 
-// Standalone Note Routes (Delete)
+// ✅ Standalone Note Routes
 app.use("/api/notes", noteRoutes);
 
 // ======================================================
@@ -52,7 +52,6 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
-
         await connectDB();
 
         app.listen(PORT, () => {
@@ -60,9 +59,7 @@ const startServer = async () => {
         });
 
     } catch (error) {
-
         console.error(error);
-
     }
 };
 

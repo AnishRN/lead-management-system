@@ -1,6 +1,9 @@
 const express = require("express");
 
-const router = express.Router({ mergeParams: true });
+const router = express.Router({
+    mergeParams:true
+});
+
 
 const {
     createNote,
@@ -8,13 +11,14 @@ const {
     deleteNote
 } = require("../controllers/noteController");
 
-const protect = require("../middleware/authMiddleware");
+
+const { protect } = require("../middleware/authMiddleware");
+
 const noteAccess = require("../middleware/noteAccessMiddleware");
 
-// ======================================================
-// Create Note
+
+
 // POST /api/leads/:id/notes
-// ======================================================
 
 router.post(
     "/",
@@ -22,10 +26,9 @@ router.post(
     createNote
 );
 
-// ======================================================
-// Get Notes
+
+
 // GET /api/leads/:id/notes
-// ======================================================
 
 router.get(
     "/",
@@ -33,10 +36,9 @@ router.get(
     getLeadNotes
 );
 
-// ======================================================
-// Delete Note
+
+
 // DELETE /api/notes/:noteId
-// ======================================================
 
 router.delete(
     "/:noteId",
@@ -44,5 +46,7 @@ router.delete(
     noteAccess,
     deleteNote
 );
+
+
 
 module.exports = router;
