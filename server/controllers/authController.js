@@ -69,7 +69,12 @@ const loginUser = async (req, res) => {
 
     try {
 
-        const { email, password } = req.body;
+        console.log("========== LOGIN REQUEST ==========");
+        console.log("Headers:", req.headers);
+        console.log("Body:", req.body);
+        console.log("===================================");
+
+        const { email, password } = req.body || {};
 
         if (!email || !password) {
 
@@ -80,7 +85,6 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Find User
         const user = await User.findOne({ email });
 
         if (!user) {
@@ -92,7 +96,6 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Compare Password
         const isMatch = await user.comparePassword(password);
 
         if (!isMatch) {
@@ -104,7 +107,6 @@ const loginUser = async (req, res) => {
 
         }
 
-        // Generate Token
         const token = generateToken(user._id);
 
         res.status(200).json({
@@ -118,24 +120,25 @@ const loginUser = async (req, res) => {
             user: {
 
                 id: user._id,
-
                 name: user.name,
-
                 email: user.email,
-
                 role: user.role
 
             }
 
         });
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(error);
 
         res.status(500).json({
+
             success: false,
             message: "Internal Server Error"
+
         });
 
     }

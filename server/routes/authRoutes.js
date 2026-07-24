@@ -9,7 +9,6 @@ const {
     adminOnly
 } = require("../controllers/authController");
 
-// ✅ FIXED IMPORTS
 const { protect } = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 
@@ -17,17 +16,28 @@ const { authorizeRoles } = require("../middleware/roleMiddleware");
 // Public Routes
 // ======================================================
 
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+router.post(
+    "/register",
+    registerUser
+);
+
+router.post(
+    "/login",
+    loginUser
+);
 
 // ======================================================
-// Protected Route
+// Protected Routes
 // ======================================================
 
-router.get("/me", protect, getMe);
+router.get(
+    "/me",
+    protect,
+    getMe
+);
 
 // ======================================================
-// Admin Only Route
+// Admin Route
 // ======================================================
 
 router.get(
