@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const LEAD_STATUS = require("../constants/leadStatus");
 const leadSchema = new mongoose.Schema(
     {
         name: {
@@ -32,14 +32,7 @@ const leadSchema = new mongoose.Schema(
 
         status: {
             type: String,
-            enum: [
-                "New",
-                "Contacted",
-                "Qualified",
-                "Proposal Sent",
-                "Won",
-                "Lost",
-            ],
+            enum: LEAD_STATUS,
             default: "New",
         },
 
