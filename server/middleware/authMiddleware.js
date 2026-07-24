@@ -23,6 +23,12 @@ const protect = async (req, res, next) => {
             });
         }
 
+        console.log("==========================");
+        console.log("Authorization Header:", req.headers.authorization);
+        console.log("Extracted Token:", token);
+        console.log("JWT Secret:", process.env.JWT_SECRET);
+        console.log("==========================");
+
         const decoded = jwt.verify(
             token,
             process.env.JWT_SECRET

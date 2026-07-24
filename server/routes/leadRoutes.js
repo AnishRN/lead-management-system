@@ -14,6 +14,7 @@ const {
 
 const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
+const leadAccess = require("../middleware/leadAccessMiddleware");
 
 // ======================================================
 // Create Lead
@@ -48,25 +49,25 @@ router.get(
 router.get(
     "/:id",
     protect,
+    leadAccess,
     getLeadById
 );
 
 // ======================================================
 // Update Lead
 // PUT /api/leads/:id
-// Admin & Assigned Member
 // ======================================================
 
 router.put(
     "/:id",
     protect,
+    leadAccess,
     updateLead
 );
 
 // ======================================================
 // Delete Lead
 // DELETE /api/leads/:id
-// Admin Only
 // ======================================================
 
 router.delete(
@@ -79,7 +80,6 @@ router.delete(
 // ======================================================
 // Assign Lead
 // PATCH /api/leads/:id/assign
-// Admin Only
 // ======================================================
 
 router.patch(
@@ -92,12 +92,12 @@ router.patch(
 // ======================================================
 // Update Lead Status
 // PATCH /api/leads/:id/status
-// Admin & Assigned Member
 // ======================================================
 
 router.patch(
     "/:id/status",
     protect,
+    leadAccess,
     updateLeadStatus
 );
 

@@ -1,6 +1,7 @@
 const Lead = require("../models/Lead");
 const Activity = require("../models/Activity");
 const User = require("../models/User");
+
 const LEAD_STATUS = require("../constants/leadStatus");
 const validateObjectId = require("../utils/validateObjectId");
 
@@ -11,9 +12,7 @@ const validateObjectId = require("../utils/validateObjectId");
 // ======================================================
 
 const createLead = async (req, res) => {
-
     try {
-
         const {
             name,
             email,
@@ -23,19 +22,33 @@ const createLead = async (req, res) => {
             assignedTo,
         } = req.body;
 
-
         if (!name || !email) {
-
             return res.status(400).json({
                 success: false,
                 message: "Name and email are required",
             });
-
         }
 
+        // Validate assigned user (if provided)
+        if (assignedTo) {
+            if (!validateObjectId(assignedTo)) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Invalid assigned user ID",
+                });
+            }
+
+            const user = await User.findById(assignedTo);
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Assigned user not found",
+                });
+            }
+        }
 
         const lead = await Lead.create({
-
             name,
             email,
             phone,
@@ -43,185 +56,101 @@ const createLead = async (req, res) => {
             source,
             assignedTo: assignedTo || null,
             createdBy: req.user._id,
-
         });
-
 
         await Activity.create({
-
             lead: lead._id,
-
             user: req.user._id,
-
             action: "Lead Created",
-
         });
-
 
         const populatedLead = await Lead.findById(lead._id)
             .populate("assignedTo", "name email role")
-            .populate("createdBy", "name email");
-
+            .populate("createdBy", "name email role");
 
         res.status(201).json({
-
             success: true,
-
             message: "Lead created successfully",
-
             lead: populatedLead,
-
         });
-
 
     } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
-
 };
-
-
 
 // ======================================================
 // Get All Leads
 // GET /api/leads
 // ======================================================
 
-const getAllLeads = async (req,res)=>{
+const getAllLeads = async (req, res) => {
 
-    try{
+    try {
 
-        let query={};
+        const query = {};
 
-
-        if(req.user.role==="member"){
-
-            query.assignedTo=req.user._id;
-
+        if (req.user.role === "member") {
+            query.assignedTo = req.user._id;
         }
 
-
         const leads = await Lead.find(query)
-
-            .populate("assignedTo","name email role")
-
-            .populate("createdBy","name email")
-
-            .sort({createdAt:-1});
-
+            .populate("assignedTo", "name email role")
+            .populate("createdBy", "name email role")
+            .sort({ createdAt: -1 });
 
         res.status(200).json({
-
-            success:true,
-
-            count:leads.length,
-
-            leads
-
+            success: true,
+            count: leads.length,
+            leads,
         });
 
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
 
 };
 
-
-
 // ======================================================
 // Get Lead By ID
 // GET /api/leads/:id
 // ======================================================
 
-const getLeadById = async(req,res)=>{
+const getLeadById = async (req, res) => {
 
-    try{
+    try {
 
-
-        const lead = await Lead.findById(req.params.id)
-
-            .populate("assignedTo","name email role")
-
-            .populate("createdBy","name email");
-
-
-
-        if(!lead){
-
-            return res.status(404).json({
-
-                success:false,
-
-                message:"Lead not found"
-
-            });
-
-        }
-
-
-
-        if(
-
-            req.user.role==="member" &&
-
-            (!lead.assignedTo ||
-
-            lead.assignedTo._id.toString() !== req.user._id.toString())
-
-        ){
-
-            return res.status(403).json({
-
-                success:false,
-
-                message:"Access denied"
-
-            });
-
-        }
-
-
+        // Lead already validated by middleware
+        const populatedLead = await Lead.findById(req.lead._id)
+            .populate("assignedTo", "name email role")
+            .populate("createdBy", "name email role");
 
         res.status(200).json({
-
-            success:true,
-
-            lead
-
+            success: true,
+            lead: populatedLead,
         });
 
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
@@ -235,113 +164,67 @@ const getLeadById = async(req,res)=>{
 // PUT /api/leads/:id
 // ======================================================
 
-const updateLead = async(req,res)=>{
+// ======================================================
+// Update Lead
+// PUT /api/leads/:id
+// ======================================================
 
-    try{
+const updateLead = async (req, res) => {
 
+    try {
 
-        const lead = await Lead.findById(req.params.id);
-
-
-        if(!lead){
-
-            return res.status(404).json({
-
-                success:false,
-
-                message:"Lead not found"
-
-            });
-
-        }
-
-
-
-        if(
-
-            req.user.role==="member" &&
-
-            (!lead.assignedTo ||
-
-            lead.assignedTo.toString() !== req.user._id.toString())
-
-        ){
-
-            return res.status(403).json({
-
-                success:false,
-
-                message:"Access denied"
-
-            });
-
-        }
-
-
+        const lead = req.lead;
 
         const oldData = {
-
-            name:lead.name,
-
-            email:lead.email,
-
-            company:lead.company
-
+            name: lead.name,
+            email: lead.email,
+            phone: lead.phone,
+            company: lead.company,
+            source: lead.source,
+            status: lead.status,
         };
 
+        // Don't allow these fields to be updated here
+        delete req.body.createdBy;
+        delete req.body.assignedTo;
+        delete req.body._id;
+        delete req.body.createdAt;
+        delete req.body.updatedAt;
 
-
-        Object.assign(lead,req.body);
-
+        Object.assign(lead, req.body);
 
         await lead.save();
 
-
-
         await Activity.create({
-
-            lead:lead._id,
-
-            user:req.user._id,
-
-            action:"Lead Updated",
-
-            oldValue:JSON.stringify(oldData),
-
-            newValue:JSON.stringify(req.body)
-
+            lead: lead._id,
+            user: req.user._id,
+            action: "Lead Updated",
+            oldValue: JSON.stringify(oldData),
+            newValue: JSON.stringify(req.body),
         });
 
-
+        const populatedLead = await Lead.findById(lead._id)
+            .populate("assignedTo", "name email role")
+            .populate("createdBy", "name email role");
 
         res.status(200).json({
-
-            success:true,
-
-            message:"Lead updated successfully",
-
-            lead
-
+            success: true,
+            message: "Lead updated successfully",
+            lead: populatedLead,
         });
 
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
 
 };
-
-
 
 // ======================================================
 // Delete Lead
@@ -349,68 +232,51 @@ const updateLead = async(req,res)=>{
 // Admin Only
 // ======================================================
 
-const deleteLead = async(req,res)=>{
+const deleteLead = async (req, res) => {
 
-    try{
+    try {
 
+        if (!validateObjectId(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Lead ID",
+            });
+        }
 
         const lead = await Lead.findById(req.params.id);
 
-
-        if(!lead){
-
+        if (!lead) {
             return res.status(404).json({
-
-                success:false,
-
-                message:"Lead not found"
-
+                success: false,
+                message: "Lead not found",
             });
-
         }
 
-
         await Activity.create({
-
-            lead:lead._id,
-
-            user:req.user._id,
-
-            action:"Lead Deleted"
-
+            lead: lead._id,
+            user: req.user._id,
+            action: "Lead Deleted",
         });
-
 
         await lead.deleteOne();
 
-
-
         res.status(200).json({
-
-            success:true,
-
-            message:"Lead deleted successfully"
-
+            success: true,
+            message: "Lead deleted successfully",
         });
 
-
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
 
 };
-
 
 
 // ======================================================
@@ -419,185 +285,166 @@ const deleteLead = async(req,res)=>{
 // Admin Only
 // ======================================================
 
-const assignLead = async(req,res)=>{
+// ======================================================
+// Assign Lead
+// PATCH /api/leads/:id/assign
+// Admin Only
+// ======================================================
 
-    try{
+const assignLead = async (req, res) => {
 
+    try {
 
-        const {assignedTo}=req.body;
+        const { assignedTo } = req.body;
 
+        if (!assignedTo) {
+            return res.status(400).json({
+                success: false,
+                message: "assignedTo is required",
+            });
+        }
+
+        if (!validateObjectId(assignedTo)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid User ID",
+            });
+        }
+
+        const user = await User.findById(assignedTo);
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "Assigned user not found",
+            });
+        }
+
+        if (!validateObjectId(req.params.id)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid Lead ID",
+            });
+        }
 
         const lead = await Lead.findById(req.params.id);
 
-
-        if(!lead){
-
+        if (!lead) {
             return res.status(404).json({
-
-                success:false,
-
-                message:"Lead not found"
-
+                success: false,
+                message: "Lead not found",
             });
-
         }
 
-
-        const oldUser = lead.assignedTo;
-
+        const oldAssignedUser = lead.assignedTo;
 
         lead.assignedTo = assignedTo;
 
-
         await lead.save();
 
-
-
         await Activity.create({
-
-            lead:lead._id,
-
-            user:req.user._id,
-
-            action:"Lead Assigned",
-
-            oldValue:String(oldUser),
-
-            newValue:String(assignedTo)
-
+            lead: lead._id,
+            user: req.user._id,
+            action: "Lead Assigned",
+            oldValue: oldAssignedUser ? oldAssignedUser.toString() : "None",
+            newValue: assignedTo,
         });
 
-
+        const populatedLead = await Lead.findById(lead._id)
+            .populate("assignedTo", "name email role")
+            .populate("createdBy", "name email role");
 
         res.status(200).json({
-
-            success:true,
-
-            message:"Lead assigned successfully",
-
-            lead
-
+            success: true,
+            message: "Lead assigned successfully",
+            lead: populatedLead,
         });
 
-
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
 
 };
-
-
 
 // ======================================================
 // Update Status
 // PATCH /api/leads/:id/status
 // ======================================================
 
-const updateLeadStatus = async(req,res)=>{
+const updateLeadStatus = async (req, res) => {
 
-    try{
+    try {
 
+        const { status } = req.body;
 
-        const {status}=req.body;
-
-
-        const lead = await Lead.findById(req.params.id);
-
-
-        if(!lead){
-
-            return res.status(404).json({
-
-                success:false,
-
-                message:"Lead not found"
-
+        if (!status) {
+            return res.status(400).json({
+                success: false,
+                message: "Status is required",
             });
-
         }
 
+        if (!LEAD_STATUS.includes(status)) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid lead status",
+            });
+        }
+
+        const lead = req.lead;
 
         const oldStatus = lead.status;
 
-
-        lead.status=status;
-
+        lead.status = status;
 
         await lead.save();
 
-
-
         await Activity.create({
-
-            lead:lead._id,
-
-            user:req.user._id,
-
-            action:"Status Changed",
-
-            oldValue:oldStatus,
-
-            newValue:status
-
+            lead: lead._id,
+            user: req.user._id,
+            action: "Status Changed",
+            oldValue: oldStatus,
+            newValue: status,
         });
 
-
+        const populatedLead = await Lead.findById(lead._id)
+            .populate("assignedTo", "name email role")
+            .populate("createdBy", "name email role");
 
         res.status(200).json({
-
-            success:true,
-
-            message:"Status updated successfully",
-
-            lead
-
+            success: true,
+            message: "Status updated successfully",
+            lead: populatedLead,
         });
 
-
-
-    }catch(error){
+    } catch (error) {
 
         console.error(error);
 
         res.status(500).json({
-
-            success:false,
-
-            message:"Internal Server Error"
-
+            success: false,
+            message: "Internal Server Error",
         });
 
     }
 
 };
 
-
-
-module.exports={
+module.exports = {
 
     createLead,
-
     getAllLeads,
-
     getLeadById,
-
     updateLead,
-
     deleteLead,
-
     assignLead,
-
-    updateLeadStatus
+    updateLeadStatus,
 
 };
