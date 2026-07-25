@@ -1,5 +1,0 @@
-Admin creds:
-name:
-leadadmin
-pass
-LJFnsXFDyLJn845D
