@@ -10,7 +10,7 @@ The project was built using the MERN stack with JWT authentication and role-base
 
 ## Live Demo
 
-Frontend: [Deployment](https://lead-management-system-ochre-sigma.vercel.app/)
+Frontend: [Vercel Deployment](https://lead-management-system-ochre-sigma.vercel.app/)
 
 Backend API: [Render Deployment](https://lead-management-system-6tsq.onrender.com)
 
