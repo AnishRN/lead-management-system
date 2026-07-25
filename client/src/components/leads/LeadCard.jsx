@@ -1,5 +1,5 @@
 import formatDate from "../../utils/formatDate";
-import leadStatusColor from "../../utils/LeadStatusColor";
+import leadStatusColor from "../../utils/leadStatusColor";
 
 const LeadCard = ({ lead }) => {
 
