@@ -1,44 +1,20 @@
-describe("Lead Management API", () => {
-
-    test("should create a new lead", async () => {
-
-        /*
-            Future implementation:
-            POST /api/leads
-
-            Expect:
-            - HTTP 201
-            - Lead created
-        */
-
-        expect(true).toBe(true);
-
+const api = require("./helpers");
+describe("Lead API", () => {
+    test("Public lead submission", async () => {
+        const response = await api
+            .post("/api/public")
+            .send({
+                name: "John Doe",
+                email: "john@test.com",
+                phone: "9999999999",
+                company: "Digital Heroes",
+                source: "Website"
+            });
+        expect([200,201]).toContain(response.status);
     });
-
-    test("should fetch leads with pagination", async () => {
-
-        /*
-            Future implementation:
-            GET /api/leads?page=1
-
-            Expect:
-            - HTTP 200
-            - Array of leads
-        */
-
-        expect(true).toBe(true);
-
-    });
-
-    test("should update lead status", async () => {
-
-        /*
-            Future implementation:
-            PATCH /api/leads/:id/status
-        */
-
-        expect(true).toBe(true);
-
+    test("Unauthorized user cannot access leads", async () => {
+        const response = await api.get("/api/leads");
+        expect([401,403]).toContain(response.status);
     });
 
 });
