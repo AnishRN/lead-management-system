@@ -1,82 +1,96 @@
 # Lead Management System
 
-A simple CRM-style lead management application built for a small sales team.
+A CRM-style lead management application built for a small sales team.
 
-The application allows visitors to submit leads through a public form while authenticated staff can manage those leads through an internal dashboard.
+The application allows visitors to submit leads through a public form, while authenticated staff members can manage those leads through an internal dashboard. It supports role-based access control, lead assignment, status tracking, notes, activity history, filtering and pagination.
 
-The project was built using the MERN stack with JWT authentication and role-based access control.
-
----
-
-## Live Demo
-
-Frontend: [Vercel Deployment](https://lead-management-system-ochre-sigma.vercel.app/)
-
-Backend API: [Render Deployment](https://lead-management-system-6tsq.onrender.com)
+This project was built as part of the **Digital Heroes Training Task**.
 
 ---
 
-## Demo Accounts
+# Live Demo
 
-### Admin
+Frontend (Vercel)
 
-Email:
+https://lead-management-system-ochre-sigma.vercel.app/
+
+Backend API (Render)
+
+https://lead-management-system-6tsq.onrender.com
+
+---
+
+# Demo Accounts
+
+## Admin
+
+Email
+
 ```
 admin@test.com
 ```
 
-Password:
+Password
+
 ```
 password123
 ```
 
-### Member
+---
 
-Email:
+## Member
+
+Email
+
 ```
 member@test.com
 ```
 
-Password:
+Password
+
 ```
 123456
 ```
 
 ---
 
-## Features
+# Features
 
-### Public Lead Capture
+## Public Lead Capture
 
 - Public landing page
 - Visitors can submit leads without logging in
-- Validation on both client and server
-- New leads automatically enter the pipeline
+- Client-side and server-side validation
+- Leads are automatically added to the sales pipeline
 
-### Authentication
+---
 
-- JWT based login
-- Password hashing using bcrypt
+## Authentication
+
+- JWT authentication
+- Password hashing with bcrypt
 - Protected API routes
-- Persistent login using localStorage
+- Persistent login using Local Storage
 
-### Role Based Access Control
+---
 
-Admin can
+## Role-Based Access Control
+
+### Admin
 
 - View all leads
-- Create leads
+- Create new leads
 - Delete leads
-- Assign leads
-- Change lead status
-- View timelines
+- Assign leads to members
+- Update lead status
+- View complete activity timeline
 
-Member can
+### Member
 
 - View assigned leads
 - View lead details
 - Add notes
-- View activity timeline
+- View activity history
 
 Permissions are enforced on both the frontend and backend.
 
@@ -84,9 +98,7 @@ Permissions are enforced on both the frontend and backend.
 
 ## Lead Lifecycle
 
-Each lead progresses through a status pipeline.
-
-Current statuses:
+Each lead progresses through the following pipeline:
 
 - New
 - Contacted
@@ -95,38 +107,40 @@ Current statuses:
 - Won
 - Lost
 
-Leads can also be assigned to members.
+Leads can also be assigned to individual sales members.
 
 ---
 
 ## Activity Timeline
 
-Every important action is recorded.
+Every important action is recorded automatically.
 
 Examples include:
 
 - Lead created
 - Lead assigned
-- Status changed
+- Lead status updated
 - Notes added
+
+This provides a complete history of each lead.
 
 ---
 
-## Search & Filtering
+## Search, Filtering & Pagination
 
 The dashboard supports:
 
 - Search by name
 - Search by email
 - Search by company
-- Filter by status
+- Filter by lead status
 - Pagination
 
 ---
 
-## Tech Stack
+# Tech Stack
 
-### Frontend
+## Frontend
 
 - React
 - Vite
@@ -135,46 +149,48 @@ The dashboard supports:
 - React Router
 - React Hot Toast
 
-### Backend
+## Backend
 
 - Node.js
-- Express
-- MongoDB
+- Express.js
+- MongoDB Atlas
 - Mongoose
 - JWT
 - bcrypt
 
 ---
 
-## Folder Structure
+# Project Structure
 
 ```
 lead-management-system/
 │
 ├── client/
 │   ├── src/
+│   ├── public/
 │   └── ...
 │
 ├── server/
+│   ├── config/
 │   ├── controllers/
 │   ├── middleware/
 │   ├── models/
 │   ├── routes/
-│   ├── utils/
+│   ├── tests/
 │   └── ...
+│
+└── README.md
 ```
 
 ---
 
-## Running Locally
+# Running Locally
 
-### Clone
+## Clone Repository
 
 ```bash
 git clone https://github.com/AnishRN/lead-management-system.git
 ```
-
-Move into the project.
 
 ```bash
 cd lead-management-system
@@ -182,7 +198,7 @@ cd lead-management-system
 
 ---
 
-### Backend
+## Backend
 
 ```bash
 cd server
@@ -190,17 +206,17 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file.
+Create a `.env` file inside the server directory.
 
 ```
 PORT=5000
-MONGO_URI=your_mongodb_connection
-JWT_SECRET=your_secret
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_secret_key
 ```
 
 ---
 
-### Frontend
+## Frontend
 
 ```bash
 cd client
@@ -208,7 +224,7 @@ npm install
 npm run dev
 ```
 
-Create a `.env` file.
+Create a `.env` file inside the client directory.
 
 ```
 VITE_API_URL=http://localhost:5000/api
@@ -216,52 +232,52 @@ VITE_API_URL=http://localhost:5000/api
 
 ---
 
-## API
+# REST API
 
-### Authentication
+## Authentication
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
 | POST | `/api/auth/login` | Login |
 | POST | `/api/auth/register` | Register |
-| GET | `/api/auth/me` | Current user |
+| GET | `/api/auth/me` | Current User |
 
 ---
 
-### Leads
+## Leads
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| GET | `/api/leads` | Get all leads |
-| POST | `/api/leads` | Create lead |
-| GET | `/api/leads/:id` | Lead details |
-| PUT | `/api/leads/:id` | Update lead |
-| DELETE | `/api/leads/:id` | Delete lead |
-| PATCH | `/api/leads/:id/status` | Update status |
-| PATCH | `/api/leads/:id/assign` | Assign member |
+| GET | `/api/leads` | Get Leads |
+| POST | `/api/leads` | Create Lead |
+| GET | `/api/leads/:id` | Get Lead |
+| PUT | `/api/leads/:id` | Update Lead |
+| DELETE | `/api/leads/:id` | Delete Lead |
+| PATCH | `/api/leads/:id/status` | Update Status |
+| PATCH | `/api/leads/:id/assign` | Assign Lead |
 
 ---
 
-### Public
+## Public
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/public/leads` | Submit a public lead |
+| POST | `/api/public/leads` | Public Lead Submission |
 
 ---
 
-### Notes
+## Notes
 
 | Method | Endpoint | Description |
 |---------|----------|-------------|
-| POST | `/api/notes/:leadId` | Add note |
-| DELETE | `/api/notes/:id` | Delete note |
+| POST | `/api/notes/:leadId` | Add Note |
+| DELETE | `/api/notes/:id` | Delete Note |
 
 ---
 
-## Query Parameters
+# Query Parameters
 
-The lead list endpoint supports:
+Lead listing supports:
 
 ```
 ?page=1
@@ -278,21 +294,16 @@ GET /api/leads?page=1&status=Qualified&search=company
 
 ---
 
-## Testing
+# Testing
 
-Tests were written using:
-
-- Jest
-- Supertest
-
-The following flows are covered:
+The project includes a Jest and Supertest testing structure covering:
 
 - Authentication
 - Authorization
-- Lead creation
+- Public lead creation
 - Protected routes
 
-Run:
+Run the test suite using:
 
 ```bash
 npm test
@@ -300,40 +311,61 @@ npm test
 
 ---
 
-## Testing
+# API Documentation
 
-The project is configured with:
+A detailed API document is included in the repository.
 
-- Jest
-- Supertest
-
-The current test suite includes the initial structure for:
-
-- Authentication
-- Lead management
-- Protected route validation
-
-Run the tests using:
-
-```bash
-npm test
 ```
-
-The suite is designed to be extended with database seeding and integration tests.
-
-
-## Deployment
-
-Frontend is deployed on Vercel.
-
-Backend is deployed on Render.
-
-MongoDB Atlas is used for the database.
+docs/API_Documentation.pdf
+```
 
 ---
 
-## Credits
+# Deployment
 
-Built for Digital Heroes Training Task
+Frontend
+
+- Vercel
+
+Backend
+
+- Render
+
+Database
+
+- MongoDB Atlas
+
+---
+
+# Assumptions
+
+Some implementation decisions were made where the specification was open-ended.
+
+- The system contains two predefined roles: Admin and Member.
+- User registration is intended for internal use only.
+- Demo accounts are provided instead of a public registration flow.
+- Only administrators can assign leads and manage the lead pipeline.
+- Members are limited to working with their assigned leads.
+
+---
+
+# AI Usage
+
+AI tools (primarily ChatGPT) were used as a development assistant throughout the project.
+
+They were mainly used to:
+
+- Plan the frontend folder structure.
+- Speed up the creation of reusable React components.
+- Generate the initial testing structure using Jest and Supertest.
+- Help troubleshoot deployment issues on Render and Vercel.
+
+The application logic, backend APIs, authentication flow, deployment configuration, debugging, integration between frontend and backend, and final project decisions were completed and adjusted manually to fit the assignment requirements.
+
+---
+
+# Credits
+
+Built for **Digital Heroes Training Task**
 
 https://digitalheroesco.com
