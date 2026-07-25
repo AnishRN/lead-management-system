@@ -2,18 +2,20 @@ const Loader = () => {
 
     return (
 
-        <div
-            style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                height: "300px",
-                fontSize: "20px",
-                fontWeight: "bold"
-            }}
-        >
+        <div className="text-center my-5">
 
-            Loading...
+            <div
+                className="spinner-border"
+                role="status"
+            >
+
+                <span className="visually-hidden">
+
+                    Loading...
+
+                </span>
+
+            </div>
 
         </div>
 

@@ -1,39 +1,62 @@
+import formatDate from "../../utils/formatDate";
+import leadStatusColor from "../../utils/LeadStatusColor";
+
 const LeadCard = ({ lead }) => {
+
+    if (!lead) return null;
 
     return (
 
-        <div
-            style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "15px",
-                marginBottom: "15px"
-            }}
-        >
+        <div className="card shadow-sm">
 
-            <h3>
+            <div className="card-body">
 
-                {lead.name}
+                <div className="d-flex justify-content-between">
 
-            </h3>
+                    <h3>{lead.name}</h3>
 
-            <p>
+                    <span
+                        className={`badge bg-${leadStatusColor(lead.status)}`}
+                    >
+                        {lead.status}
+                    </span>
 
-                {lead.email}
+                </div>
 
-            </p>
+                <hr />
 
-            <p>
+                <p>
+                    <strong>Email:</strong> {lead.email}
+                </p>
 
-                {lead.company}
+                <p>
+                    <strong>Phone:</strong> {lead.phone || "-"}
+                </p>
 
-            </p>
+                <p>
+                    <strong>Company:</strong> {lead.company || "-"}
+                </p>
 
-            <p>
+                <p>
+                    <strong>Source:</strong> {lead.source}
+                </p>
 
-                <strong>Status:</strong> {lead.status}
+                <p>
+                    <strong>Assigned To:</strong>{" "}
+                    {lead.assignedTo?.name || "Unassigned"}
+                </p>
 
-            </p>
+                <p>
+                    <strong>Created By:</strong>{" "}
+                    {lead.createdBy?.name}
+                </p>
+
+                <p>
+                    <strong>Created:</strong>{" "}
+                    {formatDate(lead.createdAt)}
+                </p>
+
+            </div>
 
         </div>
 

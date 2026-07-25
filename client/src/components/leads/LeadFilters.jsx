@@ -1,68 +1,126 @@
-const LeadFilters = ({
+import { useState } from "react";
 
-    search,
+const LeadFilters = ({ onSearch }) => {
 
-    setSearch,
+    const [search, setSearch] = useState("");
 
-    status,
+    const [status, setStatus] = useState("");
 
-    setStatus
+    const handleSubmit = (e) => {
 
-}) => {
+        e.preventDefault();
+
+        onSearch({
+
+            search,
+
+            status
+
+        });
+
+    };
 
     return (
 
-        <div
-            style={{
-                display: "flex",
-                gap: "15px",
-                marginBottom: "20px"
-            }}
+        <form
+
+            onSubmit={handleSubmit}
+
+            className="row g-3 mb-4"
+
         >
 
-            <input
+            <div className="col-md-6">
 
-                type="text"
+                <input
 
-                placeholder="Search Lead..."
+                    type="text"
 
-                value={search}
+                    className="form-control"
 
-                onChange={(e) =>
+                    placeholder="Search by name, email or company"
 
-                    setSearch(e.target.value)
+                    value={search}
 
-                }
+                    onChange={(e) => setSearch(e.target.value)}
 
-            />
+                />
 
-            <select
+            </div>
 
-                value={status}
+            <div className="col-md-3">
 
-                onChange={(e) =>
+                <select
 
-                    setStatus(e.target.value)
+                    className="form-select"
 
-                }
+                    value={status}
 
-            >
+                    onChange={(e) => setStatus(e.target.value)}
 
-                <option value="">All Status</option>
+                >
 
-                <option value="New">New</option>
+                    <option value="">
 
-                <option value="Contacted">Contacted</option>
+                        All Status
 
-                <option value="Qualified">Qualified</option>
+                    </option>
 
-                <option value="Lost">Lost</option>
+                    <option value="New">
 
-                <option value="Won">Won</option>
+                        New
 
-            </select>
+                    </option>
 
-        </div>
+                    <option value="Contacted">
+
+                        Contacted
+
+                    </option>
+
+                    <option value="Qualified">
+
+                        Qualified
+
+                    </option>
+
+                    <option value="Proposal Sent">
+
+                        Proposal Sent
+
+                    </option>
+
+                    <option value="Closed">
+
+                        Closed
+
+                    </option>
+
+                    <option value="Lost">
+
+                        Lost
+
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div className="col-md-3">
+
+                <button
+
+                    className="btn btn-primary w-100"
+
+                >
+
+                    Search
+
+                </button>
+
+            </div>
+
+        </form>
 
     );
 

@@ -114,7 +114,8 @@ const getAllLeads = async (req, res) => {
             limit = 10,
             skip = 0,
             filter = {},
-            sort = { createdAt: -1 }
+            sort = { createdAt: -1 },
+            select = ""
         } = req.queryOptions || {};
 
         // ✅ Avoid mutating middleware object
@@ -151,6 +152,7 @@ const getAllLeads = async (req, res) => {
         const total = await Lead.countDocuments(finalFilter);
 
         const leads = await Lead.find(finalFilter)
+            .select(select)
             .populate("assignedTo", "name email role")
             .populate("createdBy", "name email role")
             .sort(sort)
