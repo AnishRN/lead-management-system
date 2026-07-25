@@ -1,49 +1,40 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-import {
-    getNotes,
-    createNote
-} from "../../api/leadApi";
+import Loader from "../common/Loader";
+
+import NoteItem from "./NoteItem";
+
+import useNotes from "../../hooks/useNotes";
 
 const NotesSection = ({ leadId }) => {
 
-    const [notes, setNotes] = useState([]);
+    const {
+
+        notes,
+
+        loading,
+
+        addNote,
+
+        removeNote
+
+    } = useNotes(leadId);
 
     const [text, setText] = useState("");
 
-    const loadNotes = async () => {
+    const handleSubmit = async (e) => {
 
-        try {
+        e.preventDefault();
 
-            const { data } = await getNotes(leadId);
+        if (!text.trim()) {
 
-            setNotes(data.notes);
-
-        }
-
-        catch (err) {
-
-            console.error(err);
+            return;
 
         }
 
-    };
-
-    useEffect(() => {
-
-        loadNotes();
-
-    }, [leadId]);
-
-    const addNote = async () => {
-
-        if (!text.trim()) return;
-
-        await createNote(leadId, text);
+        await addNote(text);
 
         setText("");
-
-        loadNotes();
 
     };
 
@@ -53,51 +44,72 @@ const NotesSection = ({ leadId }) => {
 
             <div className="card-header">
 
-                Notes
+                <h5 className="mb-0">
+
+                    Notes
+
+                </h5>
 
             </div>
 
             <div className="card-body">
 
-                <textarea
-                    className="form-control mb-3"
-                    rows="3"
-                    value={text}
-                    onChange={(e) =>
-                        setText(e.target.value)
-                    }
-                />
-
-                <button
-                    className="btn btn-primary mb-3"
-                    onClick={addNote}
+                <form
+                    onSubmit={handleSubmit}
+                    className="mb-4"
                 >
-                    Add Note
-                </button>
+
+                    <textarea
+                        className="form-control"
+                        rows="3"
+                        placeholder="Write a note..."
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                    />
+
+                    <button
+                        type="submit"
+                        className="btn btn-primary mt-3"
+                    >
+
+                        Add Note
+
+                    </button>
+
+                </form>
 
                 {
-                    notes.map(note => (
 
-                        <div
-                            key={note._id}
-                            className="border rounded p-2 mb-2"
-                        >
+                    loading
 
-                            <strong>
+                        ? <Loader />
 
-                                {note.user?.name}
+                        : notes.length === 0
 
-                            </strong>
+                            ? (
 
-                            <p className="mb-0">
+                                <div className="alert alert-light">
 
-                                {note.text}
+                                    No notes yet.
 
-                            </p>
+                                </div>
 
-                        </div>
+                            )
 
-                    ))
+                            : (
+
+                                notes.map((note) => (
+
+                                    <NoteItem
+                                        key={note._id}
+                                        note={note}
+                                        onDelete={removeNote}
+                                    />
+
+                                ))
+
+                            )
+
                 }
 
             </div>

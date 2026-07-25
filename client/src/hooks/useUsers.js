@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 import { getUsers } from "../api/userApi";
 
@@ -10,8 +10,7 @@ const useUsers = () => {
 
     const [error, setError] = useState(null);
 
-    // Declare BEFORE useEffect
-    const loadUsers = async () => {
+    const fetchUsers = useCallback(async () => {
 
         try {
 
@@ -43,13 +42,13 @@ const useUsers = () => {
 
         }
 
-    };
+    }, []);
 
     useEffect(() => {
 
-        loadUsers();
+        fetchUsers();
 
-    }, []);
+    }, [fetchUsers]);
 
     return {
 
@@ -59,7 +58,7 @@ const useUsers = () => {
 
         error,
 
-        reload: loadUsers
+        fetchUsers
 
     };
 

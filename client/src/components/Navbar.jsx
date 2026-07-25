@@ -1,58 +1,37 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-
-import useAuth from "../hooks/useAuth";
+import AuthContext from "../context/AuthContext";
 
 const Navbar = () => {
 
+    const { user, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    const { user, logout } = useAuth();
-
     const handleLogout = () => {
-
         logout();
-
         navigate("/login");
-
     };
 
     return (
 
-        <nav className="navbar navbar-dark bg-dark">
+        <nav className="navbar navbar-dark bg-dark px-4">
 
-            <div className="container-fluid">
+            <span className="navbar-brand">
+                CRM System
+            </span>
 
-                <span className="navbar-brand">
+            <div className="d-flex align-items-center gap-3">
 
-                    Lead Management System
-
+                <span className="text-light">
+                    {user?.name} ({user?.role})
                 </span>
 
-                <div className="d-flex align-items-center">
-
-                    <span className="text-white me-3">
-
-                        {user?.name}
-
-                        {" | "}
-
-                        {user?.role}
-
-                    </span>
-
-                    <button
-
-                        className="btn btn-danger btn-sm"
-
-                        onClick={handleLogout}
-
-                    >
-
-                        Logout
-
-                    </button>
-
-                </div>
+                <button
+                    className="btn btn-danger btn-sm"
+                    onClick={handleLogout}
+                >
+                    Logout
+                </button>
 
             </div>
 

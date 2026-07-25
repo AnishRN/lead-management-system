@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const protect = async (req, res, next) => {
-
+    console.log("PROTECT HIT");
     try {
 
         let token;
@@ -55,7 +55,12 @@ const protect = async (req, res, next) => {
 
         req.user = user;
 
-
+        console.log(
+            "Authenticated User:",
+            user.email,
+            "| Role:",
+            user.role
+        );        
         next();
 
 

@@ -1,6 +1,22 @@
 const express = require("express");
 const router = express.Router();
 
+// ======================================================
+// DEBUG LOGGER
+// ======================================================
+
+router.use((req, res, next) => {
+
+    console.log(
+        "LEAD ROUTE:",
+        req.method,
+        req.originalUrl
+    );
+
+    next();
+
+});
+
 const {
     createLead,
     getAllLeads,
@@ -15,17 +31,15 @@ const {
 // Middleware
 const { protect } = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
-const leadAccess = require("../middleware/leadAccessMiddleware"); // ✅ FIXED
+const leadAccess = require("../middleware/leadAccessMiddleware");
 const queryMiddleware = require("../middleware/queryMiddleware");
-
 
 // ======================================================
 // Routes
 // Base: /api/leads
 // ======================================================
 
-
-// ✅ Create Lead (Admin only)
+// Create Lead (Admin only)
 router.post(
     "/",
     protect,
@@ -33,8 +47,7 @@ router.post(
     createLead
 );
 
-
-// ✅ Get All Leads (Admin + Member)
+// Get All Leads
 router.get(
     "/",
     protect,
@@ -42,67 +55,59 @@ router.get(
     getAllLeads
 );
 
-
-// ✅ Get Single Lead
+// Get Single Lead
 router.get(
     "/:id",
     protect,
-    leadAccess, // ✅ FIXED
+    leadAccess,
     getLeadById
 );
 
-
-// ✅ Update Lead (Admin only)
+// Update Lead
 router.put(
     "/:id",
     protect,
     authorizeRoles("admin"),
-    leadAccess, // ✅ FIXED
+    leadAccess,
     updateLead
 );
 
-
-// ✅ Delete Lead (Admin only)
+// Delete Lead
 router.delete(
     "/:id",
     protect,
     authorizeRoles("admin"),
-    leadAccess, // ✅ FIXED
+    leadAccess,
     deleteLead
 );
 
-
 // ======================================================
-// Special Actions
+// Special Routes
 // ======================================================
 
-
-// ✅ Assign Lead (Admin only)
+// Assign Lead
 router.patch(
     "/:id/assign",
     protect,
     authorizeRoles("admin"),
-    leadAccess, // ✅ FIXED
+    leadAccess,
     assignLead
 );
 
-
-// ✅ Update Status (Admin + Member)
+// Update Status
 router.patch(
     "/:id/status",
     protect,
-    leadAccess, // ✅ FIXED
+    leadAccess,
     updateLeadStatus
 );
 
-
-// ✅ Lead Timeline (Admin + Member)
+// Lead Timeline
 router.get(
     "/:id/timeline",
     protect,
-    leadAccess, // ✅ FIXED
+    leadAccess,
     getLeadTimeline
 );
-
 
 module.exports = router;

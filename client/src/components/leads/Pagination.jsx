@@ -1,52 +1,32 @@
-const Pagination = ({ pagination, onPageChange }) => {
+const Pagination = ({ page, totalPages, onPageChange }) => {
 
-    if (!pagination) return null;
-
-    const pages = [];
-
-    for (let i = 1; i <= pagination.totalPages; i++) {
-
-        pages.push(i);
-
-    }
+    if (!totalPages || totalPages <= 1) return null;
 
     return (
 
-        <nav className="mt-4">
+        <div className="d-flex justify-content-center mt-3">
 
-            <ul className="pagination justify-content-center">
+            <button
+                className="btn btn-secondary me-2"
+                disabled={page === 1}
+                onClick={() => onPageChange(page - 1)}
+            >
+                Prev
+            </button>
 
-                {
+            <span className="align-self-center">
+                Page {page} of {totalPages}
+            </span>
 
-                    pages.map((page) => (
+            <button
+                className="btn btn-secondary ms-2"
+                disabled={page === totalPages}
+                onClick={() => onPageChange(page + 1)}
+            >
+                Next
+            </button>
 
-                        <li
-                            key={page}
-                            className={`page-item ${
-                                page === pagination.page
-                                    ? "active"
-                                    : ""
-                            }`}
-                        >
-
-                            <button
-                                className="page-link"
-                                onClick={() => onPageChange(page)}
-                            >
-
-                                {page}
-
-                            </button>
-
-                        </li>
-
-                    ))
-
-                }
-
-            </ul>
-
-        </nav>
+        </div>
 
     );
 

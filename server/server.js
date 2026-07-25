@@ -20,6 +20,13 @@ const app = express();
 // ======================================================
 // Middleware
 // ======================================================
+app.patch("/test", (req, res) => {
+    console.log("PATCH HIT");
+    res.json({
+        success: true
+    });
+});
+
 
 app.use(cors());
 

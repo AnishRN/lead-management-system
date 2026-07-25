@@ -1,3 +1,4 @@
+console.log("LEAD ACCESS HIT");
 const Lead = require("../models/Lead");
 const validateObjectId = require("../utils/validateObjectId");
 
@@ -15,6 +16,7 @@ const leadAccess = async (req, res, next) => {
 
         // Find Lead
         const lead = await Lead.findById(id);
+        console.log("Lead Found:", lead?._id);
 
         if (!lead) {
             return res.status(404).json({

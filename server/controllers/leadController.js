@@ -13,64 +13,92 @@ const validateObjectId = require("../utils/validateObjectId");
 // ======================================================
 
 const createLead = async (req, res) => {
+
     try {
-        const {
+
+        let {
             name,
             email,
             phone,
             company,
             source,
-            assignedTo,
+            assignedTo
         } = req.body;
 
         if (!name || !email) {
+
             return res.status(400).json({
                 success: false,
-                message: "Name and email are required",
+                message: "Name and email are required"
             });
+
         }
 
-        // ✅ Prevent duplicate leads
+        // Trim values
+        name = name.trim();
+        email = email.trim().toLowerCase();
+        phone = phone?.trim() || "";
+        company = company?.trim() || "";
+        source = source?.trim() || "Manual";
+
+        // Prevent duplicate email
         const existingLead = await Lead.findOne({ email });
+
         if (existingLead) {
+
             return res.status(409).json({
                 success: false,
-                message: "Lead with this email already exists",
+                message: "Lead with this email already exists"
             });
+
         }
 
-        // ✅ Validate assigned user
+        // Validate assigned member
         if (assignedTo) {
+
             if (!validateObjectId(assignedTo)) {
+
                 return res.status(400).json({
                     success: false,
-                    message: "Invalid assigned user ID",
+                    message: "Invalid assigned user ID"
                 });
+
             }
 
-            const user = await User.findById(assignedTo);
-            if (!user) {
+            const member = await User.findOne({
+                _id: assignedTo,
+                role: "member"
+            });
+
+            if (!member) {
+
                 return res.status(404).json({
                     success: false,
-                    message: "Assigned user not found",
+                    message: "Assigned member not found"
                 });
+
             }
+
         }
 
         const lead = await Lead.create({
+
             name,
             email,
             phone,
             company,
             source,
             assignedTo: assignedTo || null,
-            createdBy: req.user._id,
+            createdBy: req.user._id
+
         });
 
         await Activity.create({
+
             lead: lead._id,
             user: req.user._id,
-            action: "Lead Created",
+            action: "Lead Created"
+
         });
 
         const populatedLead = await Lead.findById(lead._id)
@@ -78,18 +106,28 @@ const createLead = async (req, res) => {
             .populate("createdBy", "name email role");
 
         res.status(201).json({
+
             success: true,
             message: "Lead created successfully",
-            lead: populatedLead,
+            lead: populatedLead
+
         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Internal Server Error",
-        });
     }
+
+    catch (error) {
+
+        console.error(error);
+
+        res.status(500).json({
+
+            success: false,
+            message: "Internal Server Error"
+
+        });
+
+    }
+
 };
 // ======================================================
 // Get All Leads
@@ -347,17 +385,56 @@ const deleteLead = async (req, res) => {
 // PATCH /api/leads/:id/assign
 // Admin Only
 // ======================================================
+// ======================================================
+// Assign / Unassign Lead
+// PATCH /api/leads/:id/assign
+// Admin Only
+// ======================================================
 
 const assignLead = async (req, res) => {
     try {
+
         const { assignedTo } = req.body;
 
+        const lead = req.lead;
+
+        const oldAssignedUser = lead.assignedTo
+            ? lead.assignedTo.toString()
+            : null;
+
+        // ==========================================
+        // Unassign Lead
+        // ==========================================
+
         if (!assignedTo) {
-            return res.status(400).json({
-                success: false,
-                message: "assignedTo is required"
+
+            lead.assignedTo = null;
+
+            await lead.save();
+
+            await Activity.create({
+                lead: lead._id,
+                user: req.user._id,
+                action: "Lead Unassigned",
+                oldValue: oldAssignedUser,
+                newValue: null
             });
+
+            const populatedLead = await Lead.findById(lead._id)
+                .populate("assignedTo", "name email role")
+                .populate("createdBy", "name email role");
+
+            return res.status(200).json({
+                success: true,
+                message: "Lead unassigned successfully",
+                lead: populatedLead
+            });
+
         }
+
+        // ==========================================
+        // Validate User ID
+        // ==========================================
 
         if (!validateObjectId(assignedTo)) {
             return res.status(400).json({
@@ -378,17 +455,15 @@ const assignLead = async (req, res) => {
             });
         }
 
-        const lead = req.lead;
-        const oldAssignedUser = lead.assignedTo;
-
         lead.assignedTo = assignedTo;
+
         await lead.save();
 
         await Activity.create({
             lead: lead._id,
             user: req.user._id,
             action: "Lead Assigned",
-            oldValue: oldAssignedUser ? oldAssignedUser.toString() : null,
+            oldValue: oldAssignedUser,
             newValue: assignedTo
         });
 
@@ -403,11 +478,14 @@ const assignLead = async (req, res) => {
         });
 
     } catch (error) {
+
         console.error(error);
+
         res.status(500).json({
             success: false,
             message: "Internal Server Error"
         });
+
     }
 };
 // ======================================================

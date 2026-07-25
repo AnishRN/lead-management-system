@@ -3,19 +3,31 @@ import LeadRow from "./LeadRow";
 
 const LeadTable = ({
     leads,
-    loading
+    loading,
+    users = [],
+    onAssign,
+    onStatusChange,
+    onDelete
 }) => {
 
     if (loading) {
+
         return <Loader />;
+
     }
 
     if (!loading && leads.length === 0) {
+
         return (
+
             <div className="alert alert-info">
+
                 No leads found.
+
             </div>
+
         );
+
     }
 
     return (
@@ -29,13 +41,22 @@ const LeadTable = ({
                     <tr>
 
                         <th>Name</th>
+
                         <th>Email</th>
+
                         <th>Company</th>
+
                         <th>Phone</th>
+
                         <th>Source</th>
+
                         <th>Status</th>
-                        <th>Assigned</th>
+
+                        <th>Assigned To</th>
+
                         <th>Created</th>
+
+                        <th>Actions</th>
 
                     </tr>
 
@@ -43,14 +64,22 @@ const LeadTable = ({
 
                 <tbody>
 
-                    {leads.map((lead) => (
+                    {
 
-                        <LeadRow
-                            key={lead._id}
-                            lead={lead}
-                        />
+                        leads.map((lead) => (
 
-                    ))}
+                            <LeadRow
+                                key={lead._id}
+                                lead={lead}
+                                users={users}
+                                onAssign={onAssign}
+                                onStatusChange={onStatusChange}
+                                onDelete={onDelete}
+                            />
+
+                        ))
+
+                    }
 
                 </tbody>
 

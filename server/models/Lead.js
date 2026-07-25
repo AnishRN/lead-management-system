@@ -1,55 +1,65 @@
 const mongoose = require("mongoose");
+
 const LEAD_STATUS = require("../constants/leadStatus");
+
 const leadSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: [true, "Lead name is required"],
-            trim: true,
+            trim: true
         },
 
         email: {
             type: String,
             required: [true, "Email is required"],
+            unique: true,
             lowercase: true,
             trim: true,
+            match: [
+                /^\S+@\S+\.\S+$/,
+                "Please enter a valid email address"
+            ]
         },
 
         phone: {
             type: String,
             trim: true,
+            default: ""
         },
 
         company: {
             type: String,
             trim: true,
+            default: ""
         },
 
         source: {
             type: String,
-            default: "Manual",
+            trim: true,
+            default: "Manual"
         },
 
         status: {
             type: String,
             enum: LEAD_STATUS,
-            default: "New",
+            default: "New"
         },
 
         assignedTo: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            default: null,
+            default: null
         },
 
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
-        },
+            required: true
+        }
     },
     {
-        timestamps: true,
+        timestamps: true
     }
 );
 

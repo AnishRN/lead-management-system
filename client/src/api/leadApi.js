@@ -1,5 +1,9 @@
 import api from "./axios";
 
+// ============================================
+// Leads
+// ============================================
+
 export const getLeads = (params = {}) =>
     api.get("/leads", { params });
 
@@ -27,3 +31,19 @@ export const updateStatus = (id, status) =>
 
 export const getTimeline = (id) =>
     api.get(`/leads/${id}/timeline`);
+
+
+// ============================================
+// Notes
+// ============================================
+
+export const getLeadNotes = (leadId) =>
+    api.get(`/leads/${leadId}/notes`);
+
+export const createLeadNote = (leadId, text) =>
+    api.post(`/leads/${leadId}/notes`, {
+        text
+    });
+
+export const deleteLeadNote = (noteId) =>
+    api.delete(`/notes/${noteId}`);

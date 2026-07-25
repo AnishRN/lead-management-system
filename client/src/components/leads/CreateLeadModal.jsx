@@ -1,55 +1,43 @@
 import { useState } from "react";
 
-const initialForm = {
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    source: "Manual"
-};
+const CreateLeadModal = ({
+    users = [],
+    onCreate
+}) => {
 
-const CreateLeadModal = ({ onCreate }) => {
-
-    const [form, setForm] = useState(initialForm);
-
-    const [loading, setLoading] = useState(false);
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        source: "Manual",
+        assignedTo: ""
+    });
 
     const handleChange = (e) => {
-
         setForm({
-
             ...form,
-
             [e.target.name]: e.target.value
-
         });
-
     };
 
     const handleSubmit = async (e) => {
-
         e.preventDefault();
 
-        try {
+        await onCreate(form);
 
-            setLoading(true);
+        setForm({
+            name: "",
+            email: "",
+            phone: "",
+            company: "",
+            source: "Manual",
+            assignedTo: ""
+        });
 
-            await onCreate(form);
-
-            setForm(initialForm);
-
-            document
-                .getElementById("closeCreateModal")
-                ?.click();
-
-        }
-
-        finally {
-
-            setLoading(false);
-
-        }
-
+        window.bootstrap.Modal.getInstance(
+            document.getElementById("createLeadModal")
+        ).hide();
     };
 
     return (
@@ -67,14 +55,10 @@ const CreateLeadModal = ({ onCreate }) => {
                     <div className="modal-header">
 
                         <h5 className="modal-title">
-
                             Create Lead
-
                         </h5>
 
                         <button
-                            id="closeCreateModal"
-                            type="button"
                             className="btn-close"
                             data-bs-dismiss="modal"
                         />
@@ -85,48 +69,119 @@ const CreateLeadModal = ({ onCreate }) => {
 
                         <div className="modal-body">
 
-                            <input
-                                className="form-control mb-3"
-                                placeholder="Name"
-                                name="name"
-                                value={form.name}
-                                onChange={handleChange}
-                                required
-                            />
+                            <div className="mb-3">
 
-                            <input
-                                className="form-control mb-3"
-                                placeholder="Email"
-                                type="email"
-                                name="email"
-                                value={form.email}
-                                onChange={handleChange}
-                                required
-                            />
+                                <label className="form-label">
+                                    Name *
+                                </label>
 
-                            <input
-                                className="form-control mb-3"
-                                placeholder="Phone"
-                                name="phone"
-                                value={form.phone}
-                                onChange={handleChange}
-                            />
+                                <input
+                                    type="text"
+                                    name="name"
+                                    className="form-control"
+                                    value={form.name}
+                                    onChange={handleChange}
+                                    required
+                                />
 
-                            <input
-                                className="form-control mb-3"
-                                placeholder="Company"
-                                name="company"
-                                value={form.company}
-                                onChange={handleChange}
-                            />
+                            </div>
 
-                            <input
-                                className="form-control"
-                                placeholder="Source"
-                                name="source"
-                                value={form.source}
-                                onChange={handleChange}
-                            />
+                            <div className="mb-3">
+
+                                <label className="form-label">
+                                    Email *
+                                </label>
+
+                                <input
+                                    type="email"
+                                    name="email"
+                                    className="form-control"
+                                    value={form.email}
+                                    onChange={handleChange}
+                                    required
+                                />
+
+                            </div>
+
+                            <div className="mb-3">
+
+                                <label className="form-label">
+                                    Phone
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    className="form-control"
+                                    value={form.phone}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                            <div className="mb-3">
+
+                                <label className="form-label">
+                                    Company
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="company"
+                                    className="form-control"
+                                    value={form.company}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                            <div className="mb-3">
+
+                                <label className="form-label">
+                                    Source
+                                </label>
+
+                                <input
+                                    type="text"
+                                    name="source"
+                                    className="form-control"
+                                    value={form.source}
+                                    onChange={handleChange}
+                                />
+
+                            </div>
+
+                            <div>
+
+                                <label className="form-label">
+                                    Assign To
+                                </label>
+
+                                <select
+                                    name="assignedTo"
+                                    className="form-select"
+                                    value={form.assignedTo}
+                                    onChange={handleChange}
+                                >
+
+                                    <option value="">
+                                        Unassigned
+                                    </option>
+
+                                    {users.map(user => (
+
+                                        <option
+                                            key={user._id}
+                                            value={user._id}
+                                        >
+                                            {user.name}
+                                        </option>
+
+                                    ))}
+
+                                </select>
+
+                            </div>
 
                         </div>
 
@@ -137,27 +192,14 @@ const CreateLeadModal = ({ onCreate }) => {
                                 className="btn btn-secondary"
                                 data-bs-dismiss="modal"
                             >
-
                                 Cancel
-
                             </button>
 
                             <button
                                 type="submit"
                                 className="btn btn-primary"
-                                disabled={loading}
                             >
-
-                                {
-
-                                    loading
-
-                                        ? "Creating..."
-
-                                        : "Create Lead"
-
-                                }
-
+                                Create Lead
                             </button>
 
                         </div>

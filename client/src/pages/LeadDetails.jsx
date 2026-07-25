@@ -4,20 +4,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import Navbar from "../components/Navbar";
-
 import Loader from "../components/common/Loader";
 
 import LeadCard from "../components/leads/LeadCard";
 import EditLeadModal from "../components/leads/EditLeadModal";
 import AssignLeadModal from "../components/leads/AssignLeadModal";
 import TimelineModal from "../components/leads/TimelineModal";
+import NotesSection from "../components/leads/NotesSection";
 
 import useLeads from "../hooks/useLeads";
 import useUsers from "../hooks/useUsers";
+import useAuth from "../hooks/useAuth";
 
 import { getLead } from "../api/leadApi";
-
-import useAuth from "../hooks/useAuth";
 
 const LeadDetails = () => {
 
@@ -119,7 +118,11 @@ const LeadDetails = () => {
 
         );
 
-        if (!confirmDelete) return;
+        if (!confirmDelete) {
+
+            return;
+
+        }
 
         await deleteLead(id);
 
@@ -290,6 +293,12 @@ const LeadDetails = () => {
 
                             </option>
 
+                            <option value="Proposal Sent">
+
+                                Proposal Sent
+
+                            </option>
+
                             <option value="Won">
 
                                 Won
@@ -307,6 +316,10 @@ const LeadDetails = () => {
                     </div>
 
                 </div>
+
+                <NotesSection
+                    leadId={id}
+                />
 
             </div>
 

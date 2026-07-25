@@ -4,34 +4,40 @@ import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import LeadDetails from "./pages/LeadDetails";
+import Leads from "./pages/Leads";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
 
     return (
-
         <BrowserRouter>
 
             <Toaster position="top-right" />
 
             <Routes>
 
-                <Route
-                    path="/"
-                    element={<Navigate to="/login" replace />}
-                />
+                {/* Redirect root */}
+                <Route path="/" element={<Navigate to="/login" replace />} />
 
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
+                {/* Public */}
+                <Route path="/login" element={<Login />} />
 
+                {/* Protected routes */}
                 <Route
                     path="/dashboard"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute allowedRoles={["admin", "member"]}>
                             <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/leads"
+                    element={
+                        <ProtectedRoute allowedRoles={["admin"]}>
+                            <Leads />
                         </ProtectedRoute>
                     }
                 />
@@ -39,23 +45,19 @@ function App() {
                 <Route
                     path="/leads/:id"
                     element={
-                        <ProtectedRoute>
+                        <ProtectedRoute allowedRoles={["admin", "member"]}>
                             <LeadDetails />
                         </ProtectedRoute>
                     }
                 />
 
-                <Route
-                    path="*"
-                    element={<Navigate to="/login" replace />}
-                />
+                {/* Catch all */}
+                <Route path="*" element={<Navigate to="/login" replace />} />
 
             </Routes>
 
         </BrowserRouter>
-
     );
-
 }
 
 export default App;
