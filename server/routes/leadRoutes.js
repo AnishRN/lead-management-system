@@ -19,6 +19,7 @@ router.use((req, res, next) => {
 
 const {
     createLead,
+    createPublicLead,
     getAllLeads,
     getLeadById,
     updateLead,
@@ -28,18 +29,30 @@ const {
     getLeadTimeline
 } = require("../controllers/leadController");
 
+// ======================================================
 // Middleware
+// ======================================================
+
 const { protect } = require("../middleware/authMiddleware");
 const { authorizeRoles } = require("../middleware/roleMiddleware");
 const leadAccess = require("../middleware/leadAccessMiddleware");
 const queryMiddleware = require("../middleware/queryMiddleware");
 
 // ======================================================
-// Routes
-// Base: /api/leads
+// Public Route
 // ======================================================
 
-// Create Lead (Admin only)
+// Public Lead Capture Form
+router.post(
+    "/public",
+    createPublicLead
+);
+
+// ======================================================
+// Protected Routes
+// ======================================================
+
+// Create Lead (Admin Only)
 router.post(
     "/",
     protect,

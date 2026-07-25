@@ -14,29 +14,23 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const leadRoutes = require("./routes/leadRoutes");
 const noteRoutes = require("./routes/noteRoutes");
+const publicRoutes = require("./routes/publicRoutes");
 
 const app = express();
 
 // ======================================================
 // Middleware
 // ======================================================
-app.patch("/test", (req, res) => {
-    console.log("PATCH HIT");
-    res.json({
-        success: true
-    });
-});
-
 
 app.use(cors());
 
 app.use(express.json());
 
-app.use(express.urlencoded({
-
-    extended: true
-
-}));
+app.use(
+    express.urlencoded({
+        extended: true
+    })
+);
 
 // ======================================================
 // Home Route
@@ -45,11 +39,8 @@ app.use(express.urlencoded({
 app.get("/", (req, res) => {
 
     res.status(200).json({
-
         success: true,
-
         message: "Lead Management API Running"
-
     });
 
 });
@@ -58,14 +49,22 @@ app.get("/", (req, res) => {
 // API Routes
 // ======================================================
 
+// Public
+app.use("/api/public", publicRoutes);
+
+// Authentication
 app.use("/api/auth", authRoutes);
 
+// Users
 app.use("/api/users", userRoutes);
 
+// Leads
 app.use("/api/leads", leadRoutes);
 
+// Lead Notes
 app.use("/api/leads/:id/notes", noteRoutes);
 
+// Individual Notes
 app.use("/api/notes", noteRoutes);
 
 // ======================================================
@@ -75,11 +74,8 @@ app.use("/api/notes", noteRoutes);
 app.use((req, res) => {
 
     res.status(404).json({
-
         success: false,
-
         message: "Route not found"
-
     });
 
 });

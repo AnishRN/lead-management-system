@@ -8,10 +8,11 @@ const activitySchema = new mongoose.Schema(
             required: true,
         },
 
+        // Null for public submissions
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            default: null,
         },
 
         action: {
@@ -33,6 +34,5 @@ const activitySchema = new mongoose.Schema(
         timestamps: true,
     }
 );
-
 
 module.exports = mongoose.model("Activity", activitySchema);

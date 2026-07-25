@@ -12,6 +12,12 @@ const validateObjectId = require("../utils/validateObjectId");
 // Admin Only
 // ======================================================
 
+// ======================================================
+// Create Lead
+// POST /api/leads
+// Admin Only
+// ======================================================
+
 const createLead = async (req, res) => {
 
     try {
@@ -22,59 +28,67 @@ const createLead = async (req, res) => {
             phone,
             company,
             source,
-            assignedTo
+            assignedTo,
+            notes
         } = req.body;
 
         if (!name || !email) {
 
             return res.status(400).json({
+
                 success: false,
                 message: "Name and email are required"
+
             });
 
         }
 
-        // Trim values
         name = name.trim();
         email = email.trim().toLowerCase();
         phone = phone?.trim() || "";
         company = company?.trim() || "";
         source = source?.trim() || "Manual";
 
-        // Prevent duplicate email
         const existingLead = await Lead.findOne({ email });
 
         if (existingLead) {
 
             return res.status(409).json({
+
                 success: false,
                 message: "Lead with this email already exists"
+
             });
 
         }
 
-        // Validate assigned member
         if (assignedTo) {
 
             if (!validateObjectId(assignedTo)) {
 
                 return res.status(400).json({
+
                     success: false,
                     message: "Invalid assigned user ID"
+
                 });
 
             }
 
             const member = await User.findOne({
+
                 _id: assignedTo,
                 role: "member"
+
             });
 
             if (!member) {
 
                 return res.status(404).json({
+
                     success: false,
                     message: "Assigned member not found"
+
                 });
 
             }
@@ -101,6 +115,20 @@ const createLead = async (req, res) => {
 
         });
 
+        if (notes && notes.trim()) {
+
+                await Note.create({
+
+                    lead: lead._id,
+
+                    user: req.user._id,
+
+                    text: notes.trim()
+
+                });
+
+            }
+
         const populatedLead = await Lead.findById(lead._id)
             .populate("assignedTo", "name email role")
             .populate("createdBy", "name email role");
@@ -122,6 +150,120 @@ const createLead = async (req, res) => {
         res.status(500).json({
 
             success: false,
+            message: "Internal Server Error"
+
+        });
+
+    }
+
+};
+
+// ======================================================
+// Public Lead Capture
+// POST /api/leads/public
+// ======================================================
+
+// ======================================================
+// Public Lead Capture
+// POST /api/leads/public
+// ======================================================
+
+const createPublicLead = async (req, res) => {
+
+    try {
+
+        let {
+            name,
+            email,
+            phone,
+            company,
+            source,
+            notes
+        } = req.body;
+
+        if (!name || !email) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message: "Name and email are required"
+
+            });
+
+        }
+
+        name = name.trim();
+        email = email.trim().toLowerCase();
+        phone = phone?.trim() || "";
+        company = company?.trim() || "";
+        source = source?.trim() || "Website";
+
+        const existingLead = await Lead.findOne({
+
+            email
+
+        });
+
+        if (existingLead) {
+
+            return res.status(409).json({
+
+                success: false,
+
+                message: "Lead with this email already exists"
+
+            });
+
+        }
+
+        const lead = await Lead.create({
+
+            name,
+            email,
+            phone,
+            company,
+            source,
+            status: "New"
+
+        });
+
+        await Activity.create({
+
+            lead: lead._id,
+            action: "Lead Submitted"
+
+        });
+
+        if (notes && notes.trim()) {
+
+            await Note.create({
+
+                lead: lead._id,
+                text: notes.trim()
+
+            });
+
+        }
+
+        return res.status(201).json({
+
+            success: true,
+
+            message: "Your enquiry has been submitted successfully."
+
+        });
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        return res.status(500).json({
+
+            success: false,
+
             message: "Internal Server Error"
 
         });
@@ -701,6 +843,8 @@ const getLeadTimeline = async(req,res)=>{
 module.exports = {
 
     createLead,
+
+    createPublicLead,
 
     getAllLeads,
 

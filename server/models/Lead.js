@@ -52,10 +52,12 @@ const leadSchema = new mongoose.Schema(
             default: null
         },
 
+        // Admin-created leads will store the admin.
+        // Public submissions will leave this as null.
         createdBy: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true
+            default: null
         }
     },
     {

@@ -8,10 +8,11 @@ const noteSchema = new mongoose.Schema(
             required: true,
         },
 
+        // Null for notes added during public enquiry
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            required: true,
+            default: null,
         },
 
         text: {
