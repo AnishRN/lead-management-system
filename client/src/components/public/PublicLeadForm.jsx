@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import toast from "react-hot-toast";
 
-import { createPublicLead } from "../../api/leadApi";
-
+import { createPublicLead } from "../../api/publicApi";
 const PublicLeadForm = () => {
 
     const [loading, setLoading] = useState(false);
