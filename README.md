@@ -10,9 +10,9 @@ The project was built using the MERN stack with JWT authentication and role-base
 
 ## Live Demo
 
-Frontend: lead-management-system-ochre-sigma.vercel.app
+Frontend: [Vercel Deployment](lead-management-system-ochre-sigma.vercel.app)
 
-Backend API: [https://your-render-url.onrender.com](https://lead-management-system-6tsq.onrender.com)
+Backend API: [Render Deployment](https://lead-management-system-6tsq.onrender.com)
 
 ---
 
@@ -299,6 +299,28 @@ npm test
 ```
 
 ---
+
+## Testing
+
+The project is configured with:
+
+- Jest
+- Supertest
+
+The current test suite includes the initial structure for:
+
+- Authentication
+- Lead management
+- Protected route validation
+
+Run the tests using:
+
+```bash
+npm test
+```
+
+The suite is designed to be extended with database seeding and integration tests.
+
 
 ## Deployment
 
