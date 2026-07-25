@@ -10,9 +10,9 @@ The project was built using the MERN stack with JWT authentication and role-base
 
 ## Live Demo
 
-Frontend: https://your-vercel-url.vercel.app
+Frontend: lead-management-system-ochre-sigma.vercel.app
 
-Backend API: https://your-render-url.onrender.com
+Backend API: [https://your-render-url.onrender.com](https://lead-management-system-6tsq.onrender.com)
 
 ---
 
@@ -22,24 +22,24 @@ Backend API: https://your-render-url.onrender.com
 
 Email:
 ```
-admin@example.com
+admin@test.com
 ```
 
 Password:
 ```
-admin123
+password123
 ```
 
 ### Member
 
 Email:
 ```
-member@example.com
+member@test.com
 ```
 
 Password:
 ```
-member123
+123456
 ```
 
 ---
