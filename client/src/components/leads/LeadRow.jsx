@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 
 import formatDate from "../../utils/formatDate";
-import leadStatusColor from "../../utils/LeadStatusColor";
+import leadStatusColor from "../../utils/leadStatusColor";
 
 const LeadRow = ({
     lead,
