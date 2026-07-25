@@ -19,6 +19,8 @@ const useLeads = (initialParams = {}) => {
 
     const [error, setError] = useState(null);
 
+    const [currentParams, setCurrentParams] = useState(initialParams);
+
     const [pagination, setPagination] = useState({
 
         page: 1,
@@ -28,13 +30,19 @@ const useLeads = (initialParams = {}) => {
 
     });
 
+    // ============================================
+    // Fetch Leads
+    // ============================================
+
     const fetchLeads = useCallback(
 
-        async (params = initialParams) => {
+        async (params = currentParams) => {
 
             try {
 
                 setLoading(true);
+
+                setCurrentParams(params);
 
                 const { data } = await getLeads(params);
 
@@ -79,15 +87,15 @@ const useLeads = (initialParams = {}) => {
 
         },
 
-        [initialParams]
+        [currentParams]
 
     );
 
     useEffect(() => {
 
-        fetchLeads();
+        fetchLeads(currentParams);
 
-    }, [fetchLeads]);
+    }, []);
 
     // ============================================
     // Create Lead
@@ -101,7 +109,7 @@ const useLeads = (initialParams = {}) => {
 
             toast.success(data.message);
 
-            await fetchLeads(initialParams);
+            await fetchLeads();
 
             return data;
 
@@ -141,7 +149,7 @@ const useLeads = (initialParams = {}) => {
 
             toast.success(data.message);
 
-            await fetchLeads(initialParams);
+            await fetchLeads();
 
             return data;
 
@@ -175,7 +183,7 @@ const useLeads = (initialParams = {}) => {
 
             toast.success(data.message);
 
-            await fetchLeads(initialParams);
+            await fetchLeads();
 
             return data;
 
@@ -221,7 +229,7 @@ const useLeads = (initialParams = {}) => {
 
             toast.success(data.message);
 
-            await fetchLeads(initialParams);
+            await fetchLeads();
 
             return data;
 
@@ -267,7 +275,7 @@ const useLeads = (initialParams = {}) => {
 
             toast.success(data.message);
 
-            await fetchLeads(initialParams);
+            await fetchLeads();
 
             return data;
 
