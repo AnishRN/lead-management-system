@@ -351,7 +351,7 @@ Some implementation decisions were made where the specification was open-ended.
 
 # AI Usage
 
-AI tools (primarily ChatGPT) were used as a development assistant throughout the project.
+AI tools (primarily ChatGPT and Gemini) were used as a development assistant throughout the project.
 
 They were mainly used to:
 
