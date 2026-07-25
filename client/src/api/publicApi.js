@@ -1,8 +1,11 @@
 import api from "./axios";
 
-// ============================================
-// Submit Public Lead
-// ============================================
 
-export const submitLead = (data) =>
-    api.post("/public/leads", data);
+export const createPublicLead = (leadData) => {
+
+    return api.post(
+        "/leads/public",
+        leadData
+    );
+
+};
